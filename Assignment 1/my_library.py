@@ -242,15 +242,74 @@ def power_method(A, x0, eps):
     return lam1, ev
 
 
+def matrix_multiplication_on_the_fly(Afn,B):
+    n = int(math.sqrt(len(B)))
+    #print('B',len(B))
+    #print('n',n)
+    m = make_matrix(len(B),1)
+    for i in range(len(B)):
+        for j in range(len(B)):
+            m[i][0] = m[i][0] + (Afn(i,j,n) * B[j][0])
+    #print('m',m)
+    return m
 
 
 
+def conjugate_gradient_on_the_fly(Afn, B, eps):
+    x0 = []
+    a=[1]
+    for i in range(len(B)):
+        x0.append(a)
+    #print('x01',x0)
+    '''
+    x0=make_matrix(len(B),1)
+    for i in range(len(x0)):
+        x0[i][0]=1
+    print('B',B)
+    print("x0",x0) 
+    '''
+    xk = matrix_copy(x0)
+    
+
+    #r0=b-Ax0
+    Ax0 = matrix_multiplication_on_the_fly(Afn, x0)
+    #print("Ax0",Ax0)
+    rk = matrix_substraction(B, Ax0)
+    #print("rk",rk)
+    i = 0
+    dk = matrix_copy(rk)
+    #print("dk",dk)
+    
+    iteration=[]
+    residue=[]
+    while math.sqrt(inner_product(rk,rk))>=eps and i <= 1000:# and i in range(len(A)):
+        adk = matrix_multiplication_on_the_fly(Afn,dk)
+        #print("adk=",adk)
+        rkrk = inner_product(rk, rk)
+        #print("rkrk = ", rkrk)
+        alpha = rkrk/inner_product(dk, adk)
+        #print("alpha = ",alpha)
+        xk = matrix_addition(xk, scaler_matrix_multiplication(alpha, dk))
+        #print("xk1=",xk)
+        rk = matrix_substraction(rk, scaler_matrix_multiplication(alpha, adk))
+        #print("rk1=",rk)
+        beta = inner_product(rk, rk)/rkrk
+        dk = matrix_addition(rk, scaler_matrix_multiplication(beta, dk))
+        
+        i = i+1
+        #print("norm=",math.sqrt(inner_product(rk,rk)))
+        #print("i=",i)
+        iteration.append(i)
+        residue.append(math.sqrt(inner_product(rk,rk)))
+    return xk, iteration, residue
+
+'''
 def conju_norm(A):
     sum=0
     for i in range(len(A)):
         sum = sum + abs(A[i][0])
     return sum
-
+'''
 def inner_product(A,B):
 
     AT = transpose(A)
@@ -258,6 +317,10 @@ def inner_product(A,B):
     C = matrix_multiplication(AT, B)
 
     return C[0][0]
+
+
+
+
 
 
 def conjugate_gradient(A, B, x0, eps):
@@ -275,7 +338,7 @@ def conjugate_gradient(A, B, x0, eps):
     
     iteration=[]
     residue=[]
-    while conju_norm(rk)>=eps:# and i in range(len(A)):
+    while math.sqrt(inner_product(rk,rk))>=eps and i <= 1000:# and i in range(len(A)):
         adk = matrix_multiplication(A,dk)
         #print("adk=",adk)
         rkrk = inner_product(rk, rk)
@@ -289,11 +352,11 @@ def conjugate_gradient(A, B, x0, eps):
         beta = inner_product(rk, rk)/rkrk
         dk = matrix_addition(rk, scaler_matrix_multiplication(beta, dk))
         
-        i = i+1
-        #print("norm=",conju_norm(rk))
+        #i = i+1
+        #print("norm=",math.sqrt(inner_product(rk,rk)))
         #print("i=",i)
         iteration.append(i)
-        residue.append(conju_norm(rk))
+        residue.append(math.sqrt(inner_product(rk,rk)))
     return xk, iteration, residue
 
 

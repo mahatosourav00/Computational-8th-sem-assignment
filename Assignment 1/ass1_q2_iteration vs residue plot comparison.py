@@ -29,14 +29,14 @@ axs[0, 1].plot(X,Y)
 axs[0, 1].set_title("Gauss-Seidel Method")
 axs[0,1].set_xlabel("no. of iterations")
 axs[0,1].set_ylabel("Residue")
-
+print('1')
 
 X, Y = data_seperate(conjugate)
 axs[1, 0].plot(X,Y)
 axs[1,0].set_title("Conjugate Gradient Method")
 axs[1,0].set_xlabel("no. of iterations")
 axs[1,0].set_ylabel("Residue")
-
+print('2')
 
 X, Y = data_seperate(jacobi)
 axs[1, 1].plot(X,Y,label='Jacobi')
@@ -47,13 +47,16 @@ axs[1, 1].plot(X,Y,label='Conjugate Gradient')
 axs[1,1].set_title("All Together")
 axs[1,1].set_xlabel("no. of iterations")
 axs[1,1].set_ylabel("Residue")
+#axs[1,1].set_xlim(0,40)
 axs[1,1].legend()
-fig.suptitle('No. of iteration vs Residue plots for\nJacobi, Gauss-Seidel, Conjugate Gradient Method')
-#fig.tight_layout()
+#axs[1,1].set_yscale('log')
+print('3')
 
-mng = plt.get_current_fig_manager()
-mng.full_screen_toggle()
-plt.show()
+fig.suptitle('No. of iteration vs Residue plots for\nJacobi, Gauss-Seidel, Conjugate Gradient Method')
+fig.tight_layout()
+
+
+
 
 fig.savefig('q2_iteration vs residue plot.png')
 plt.show()
