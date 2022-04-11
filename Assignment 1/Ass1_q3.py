@@ -8,15 +8,37 @@ def matrix_function(x, y, n):
     j2 = y//n
     if x == y:
         return -0.96
-    elif ((i1+1)%n,i2)==(j1,j2) or (i1,(i2+1)%n) == (j1,j2) or ((i1-1)%n,i2) == (j1,j2) or (i1,(i2-1)%n) == (j1,j2):
+    if ((i1+1)%n,j1) == (i2,j2):
         return 0.5
-    else:
-        return 0
+    if (i1,(j1+1)%n) == (i2,j2):
+        return 0.5
+    if ((i1-1)%n,j1) == (i2,j2):
+        return 0.5
+    if (i1,(j1-1)%n) == (i2,j2):
+        return 0.5
+    
+    return 0
+
+
 
 n = 20
 n2 = n**2
 A = []
-eps = 10e-6
+eps = 1e-4
+
+
+'''
+def make_matrix(N, M):
+    I = [[0 for x in range(M)] for y in range(N)]
+    return I
+M = make_matrix(n2,n2)
+for i in range(n2):
+    for j in range(n2):
+        M[i][j] = matrix_function(i,j,n)
+
+print(M)
+'''
+
 I=ml.unit_matrix(n2)
 for j in range(n2):
     A1 = [[I[i][j]] for i in range(n2)]
@@ -36,13 +58,16 @@ for i in range(len(I)):
     f.write('\n')
 f.close
 
+
 # residue plot
 plt.plot(it,res,label='Conjugate gradient method by generating matrix on the fly')
 plt.xlabel('Iterations')
 plt.ylabel('Residue')
 plt.legend()
-plt.show()
 plt.savefig('q3_fig.png')
+plt.show()
+
 #print("The inverse of the matrix A::")
 #ml.matrix_print(I) 
 ## inverse of matrix is saved on the file 'q3_invers_of_matrix.csv'
+
