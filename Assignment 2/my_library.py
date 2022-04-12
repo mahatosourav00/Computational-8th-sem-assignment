@@ -131,6 +131,8 @@ def linear_regression(X,Y, sig):
     return a,b, covab, err_a, err_b
 
 
+
+
 def Chebyshev_fun(X, phi, params):
     Y = []
     for i in range(len(X)):
@@ -149,21 +151,22 @@ def polynomial_fit_chebyshev(X, Y, sig, phi):
     B = make_matrix(order + 1, 1)
     #storing of A and B matrix elements
     for i in range(N):
-        for j in range(order + 1):
-            B[j][0] = B[j][0] + (((phi[1](X[i]))**j) * Y[i]) / (sig[i]**2)
-            for k in range(order + 1):
-                A[j][k] = A[j][k] + ((((phi[1](X[i]))**j)*(phi[k](X[i]))) / (sig[i]**2))
+        for j in range(order+1):
+            B[j][0] = B[j][0] + ((phi[j](X[i])) * Y[i]) / (sig[i]**2)
+            for k in range(order+1):
+                A[j][k] = A[j][k] + (((phi[j](X[i]))*(phi[k](X[i]))) / (sig[i]**2))
     
     #print(A)
     #print(B)
-    A1, B = partial_pivot_inverse(A, B)
+    A1 = matrix_copy(A)
+    A1, B = partial_pivot_inverse(A1, B)
     A1 = lu_decomposition(A1)
     B = forward_substitution(A1, B)
     B = backward_substituition(A1, B)
     chi = 0
     for i in range(N):
         sum = 0
-        for j in range(order + 1):
+        for j in range(order+1):
             sum = sum + B[j][0] * phi[j](i)
         chi = chi + math.pow((Y[i] - sum) / sig[i], 2)
 
@@ -185,8 +188,9 @@ def polynomial_fit(X, Y, sig, order):
             for k in range(order + 1):
                 A[j][k] = A[j][k] + ((X[i]**(j+k)) / (sig[i]**2))
     
-    
-    A1, B = partial_pivot_inverse(A, B)
+    #print(A)
+    A1 = matrix_copy(A)
+    A1, B = partial_pivot_inverse(A1, B)
     A1 = lu_decomposition(A1)
     B = forward_substitution(A1, B)
     B = backward_substituition(A1, B)
@@ -208,12 +212,15 @@ def lu_inverse(A):
     I = unit_matrix(len(A))
     for j in range(len(A)):
         N = [[I[i][j]] for i in range(len(A))]
-        A, N = partial_pivot_inverse(A, N)
-        A = lu_decomposition(A)
-        N = forward_substitution(A, N)
-        N = backward_substituition(A, N)
-        for i in range(len(A)):
-            I[i][j] = N[i][0]
+        #print('N',N)
+        #print('A',A)
+        A1 = matrix_copy(A)
+        M, N = partial_pivot_inverse(A1, N)
+        A1 = lu_decomposition(A1)
+        Y = forward_substitution(A1, N)
+        M = backward_substituition(A1, Y)
+        for i in range(len(A1)):
+            I[i][j] = M[i][0]
     return I
 
 
